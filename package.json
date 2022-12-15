@@ -2,9 +2,8 @@
 	"name": "chrome_extension",
 	"version": "0.0.1",
 	"description": "",
-	"main": "service.js",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"build": "parcel build manifest.json --config @parcel/config-webextension"
 	},
 	"repository": {
 		"type": "git",
@@ -15,8 +14,8 @@
 	"bugs": {
 		"url": "https://github.com/limgs0506/exten/issues"
 	},
-	"homepage": "https://github.com/limgs0506/exten#readme",
 	"devDependencies": {
+		"parcel": "^2.8.2",
 		"@parcel/config-webextension": "^2.8.2"
 	}
 }

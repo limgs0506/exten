@@ -30,12 +30,12 @@
 	},
 
 	"background": {
-		"service_worker": "service.js"
+		"service_worker": "src/service.js"
 	},
 	"content_scripts": [
 		{
 			"matches": ["https://twitter.com/*/status/*"],
-			"js": ["scripts/content.js"]
+			"js": ["src/content.js"]
 		}
 	],
 
