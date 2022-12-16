@@ -1,10 +1,11 @@
 chrome.action.onClicked.addListener((tab) => {
+	console.log("트위터 이미지 다운로더 실행됨12");
 	chrome.scripting.executeScript(
 		{
 			target: {
 				tabId: tab.id,
 			},
-			files: ["scripts/content.js"],
+			files: ["content.js"],
 		},
 		(result) => {
 			imgObj = result[0].result;

@@ -15,7 +15,9 @@
 		"url": "https://github.com/limgs0506/exten/issues"
 	},
 	"devDependencies": {
+		"@parcel/config-webextension": "^2.8.2",
+		"@types/chrome": "^0.0.204",
 		"parcel": "^2.8.2",
-		"@parcel/config-webextension": "^2.8.2"
+		"typescript": "^4.9.4"
 	}
 }
