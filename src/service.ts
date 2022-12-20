@@ -5,14 +5,19 @@ chrome.action.onClicked.addListener(() => {
 		const msg = { down: "download the article img" };
 		chrome.tabs.sendMessage(currentTabID, msg.down, (response) => {
 			console.log(response);
-			/* imgObj = result[0].result;
-
-			for (let i = 0; i < imgObj.imgName.length; i++) {
+			for (let src of response.src) {
 				chrome.downloads.download({
-					url: imgObj.imgUrl[i],
-					filename: imgObj.username + "/" + imgObj.imgName[i],
+					url: src,
 				});
-			} */
+				chrome.downloads.onDeterminingFilename.addListener(
+					(downloadItem, suggest) => {
+						const fileFormat = downloadItem.mime.split("/");
+						suggest({
+							filename: `${response.author}/${response.author}-${response.date}.${fileFormat[1]}`,
+						});
+					}
+				);
+			}
 		});
 	});
 });

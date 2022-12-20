@@ -4,7 +4,7 @@
  */
 class TweetArticle {
 	author: string;
-	Date: string;
+	date: string;
 	src: string[];
 	//format: string[];
 
@@ -14,7 +14,7 @@ class TweetArticle {
 		src: string[] /* , format: string[] */
 	) {
 		this.author = author;
-		this.Date = Date;
+		this.date = Date;
 		this.src = src;
 		//this.format = format;
 	}
