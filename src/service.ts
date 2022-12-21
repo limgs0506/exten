@@ -11,7 +11,6 @@ chrome.action.onClicked.addListener(() => {
 					filename: `${response.author}/${response.author}-${response.date}-${
 						i + 1
 					}.${fileFormat}`,
-					saveAs: true,
 				});
 			}
 		});
