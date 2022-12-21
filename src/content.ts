@@ -22,17 +22,27 @@ class TweetArticle {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	if (message == "download the article img") {
+		console.log("message recieved");
+
 		const article: HTMLElement = document.querySelector(
 			"article"
 		) as HTMLElement;
 		const textContents = article.querySelectorAll("a");
 		//textContent와 innerText의 차이?
 
-		const author = textContents[2].textContent as string; //아이디
+		const author =
+			textContents[2].textContent[0] === "@"
+				? (textContents[2].textContent as string)
+				: (textContents[3].textContent as string); //아이디
+		console.log(author);
 
-		let date = textContents[4].textContent as string; //날짜
+		const date: string = article.querySelector("time").textContent as string;
+		console.log(date);
+
 		let temp = date.match(/[\d]+/g) as RegExpMatchArray;
 		const TEMP_LENGTH = 5;
+		console.log(temp);
+
 		temp[2] = temp[2].slice(2, 4);
 		let tempTwo: string[] = [];
 		tempTwo.push(temp[2]);
@@ -43,6 +53,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			tempTwo.push(temp[i]);
 		}
 		const dateText = tempTwo.join("");
+		console.log(dateText);
 
 		const imgList: NodeListOf<HTMLImageElement> =
 			article.querySelectorAll('img[alt="이미지"]');
@@ -56,6 +67,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 		}
 
 		const tweet = new TweetArticle(author, dateText, imgSrcArr);
+		console.log(tweet);
+
 		//article id 검증 파트
 		//각 article에서 이미지 src 추출 파트
 		sendResponse(tweet);
