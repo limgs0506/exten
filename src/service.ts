@@ -3,29 +3,16 @@ chrome.action.onClicked.addListener(() => {
 		const currentTabID = result[0].id as number;
 		const msg = { down: "download the article img" };
 		chrome.tabs.sendMessage(currentTabID, msg.down, (response) => {
-			console.log(response);
-			for (let src of response.src) {
-				let count = 0;
-				count++;
-				chrome.downloads.download({
-					url: src,
-				});
-				chrome.downloads.onDeterminingFilename.addListener(
-					(downloadItem, suggest) => {
-						const fileFormat = downloadItem.mime.split("/");
-						console.log(fileFormat);
-						if (fileFormat[1] === "jpeg") {
-							fileFormat[1] = "jpg";
-						}
-						console.log(fileFormat[1]);
+			for (let i = 0; i < response.src.length; i++) {
+				const fileFormat = response.src[i].match(/(?<=format=)\w+/gi, "orig");
 
-						suggest({
-							filename: `${response.author}/${response.author}-${
-								response.date
-							}-${count.toString()}.${fileFormat[1]}`,
-						});
-					}
-				);
+				chrome.downloads.download({
+					url: response.src[i],
+					filename: `${response.author}/${response.author}-${response.date}-${
+						i + 1
+					}.${fileFormat}`,
+					saveAs: true,
+				});
 			}
 		});
 	});
