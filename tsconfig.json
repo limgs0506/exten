@@ -5,6 +5,7 @@
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
 		"strict": true,
+		"strictNullChecks": false,
 		"skipLibCheck": true,
 		"types": ["chrome"]
 	}
