@@ -38,8 +38,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 		}
 		const dateText = tempTwo.join("");
 
-		const imgList: NodeListOf<HTMLImageElement> =
-			article.querySelectorAll('img[alt="이미지"]');
+		const imgList: NodeListOf<HTMLImageElement> = article.querySelectorAll(
+			'img[src*="/media/"]'
+		);
 		let imgSrcArr: string[] = [];
 		for (let i = 0; i < imgList.length; i++) {
 			const imgSrc = imgList[i].src;
