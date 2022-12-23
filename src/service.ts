@@ -1,4 +1,14 @@
 chrome.action.onClicked.addListener(() => {
+	download();
+});
+
+chrome.commands.onCommand.addListener((command) => {
+	if (command === "run") {
+		download();
+	}
+});
+
+const download = () => {
 	chrome.tabs.query({ currentWindow: true, active: true }, (result) => {
 		const currentTabID = result[0].id as number;
 		const msg = { down: "download the article img" };
@@ -15,4 +25,4 @@ chrome.action.onClicked.addListener(() => {
 			}
 		});
 	});
-});
+};
