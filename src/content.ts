@@ -22,21 +22,28 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 				? (textContents[2].textContent as string)
 				: (textContents[3].textContent as string);
 
-		const date: string = article.querySelector("time").textContent as string;
+		function timeFiltering(date: string): string {
+			let temp = date.match(/[\d]+/g) as RegExpMatchArray;
+			let tempTwo: string[] = [];
+			const TEMP_LENGTH = 5;
 
-		let temp = date.match(/[\d]+/g) as RegExpMatchArray;
-		const TEMP_LENGTH = 5;
-
-		temp[2] = temp[2].slice(2, 4);
-		let tempTwo: string[] = [];
-		tempTwo.push(temp[2]);
-		for (let i = 3; i < TEMP_LENGTH; i++) {
-			if (temp[i].length < 2) {
-				temp[i] = "0" + temp[i];
+			temp[2] = temp[2].slice(2, 4);
+			tempTwo.push(temp[2]);
+			for (let i = 3; i < TEMP_LENGTH; i++) {
+				if (temp[i].length < 2) {
+					temp[i] = "0" + temp[i];
+				}
+				tempTwo.push(temp[i]);
 			}
-			tempTwo.push(temp[i]);
+
+			const dateText = tempTwo.join("");
+			return dateText;
 		}
-		const dateText = tempTwo.join("");
+
+		const time: NodeList = article.querySelectorAll("time");
+		const date: string =
+			time.length === 1 ? time[0].textContent : time[1].textContent;
+		const dateText = timeFiltering(date);
 
 		const imgList: NodeListOf<HTMLImageElement> = article.querySelectorAll(
 			'img[src*="/media/"]'
