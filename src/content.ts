@@ -11,19 +11,19 @@ class TweetArticle {
 }
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-	if (message == "download the article img") {
-		const article: HTMLElement = document.querySelector(
-			"article"
-		) as HTMLElement;
-		const textContents = article.querySelectorAll("a");
-
+	//text author 취득
+	function getAuthor(text: NodeListOf<HTMLAnchorElement>) {
 		const author =
-			textContents[2].textContent[0] === "@"
-				? (textContents[2].textContent as string)
-				: (textContents[3].textContent as string);
+			text[2].textContent[0] === "@"
+				? (text[2].textContent as string)
+				: (text[3].textContent as string);
 
+		return author;
+	}
+
+	//text datetext 취득
+	function getDate(article: HTMLElement) {
 		const date: string = article.querySelector("time").textContent as string;
-
 		let temp = date.match(/[\d]+/g) as RegExpMatchArray;
 		const TEMP_LENGTH = 5;
 
@@ -38,6 +38,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 		}
 		const dateText = tempTwo.join("");
 
+		return dateText;
+	}
+
+	//arti img.src 취득
+	function getImgSrc(article: HTMLElement) {
 		const imgList: NodeListOf<HTMLImageElement> = article.querySelectorAll(
 			'img[src*="/media/"]'
 		);
@@ -47,6 +52,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			const originImg: string = imgSrc.replace(/(?<=name=)\w+/gi, "orig");
 			imgSrcArr.push(originImg);
 		}
+
+		return imgSrcArr;
+	}
+
+	if (message == "download the article img") {
+		const article = document.querySelector("article");
+		const textContents = article.querySelectorAll("a");
+
+		const author = getAuthor(textContents);
+		const dateText = getDate(article);
+		const imgSrcArr = getImgSrc(article);
 
 		const tweet = new TweetArticle(author, dateText, imgSrcArr);
 		console.log(tweet);
