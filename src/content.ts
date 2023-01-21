@@ -57,7 +57,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 		);
 		let imgSrcArr: string[] = [];
 
-		if (imgList.length) {
+		if (!imgList.length) {
 			return [];
 		}
 
