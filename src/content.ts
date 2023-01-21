@@ -1,15 +1,3 @@
-class TweetArticle {
-	author: string;
-	date: string;
-	src: string[];
-
-	constructor(author: string, Date: string, src: string[]) {
-		this.author = author;
-		this.date = Date;
-		this.src = src;
-	}
-}
-
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	//text author 취득
 	function getAuthor(article: HTMLElement): string {
@@ -41,12 +29,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 		const date: string | null | undefined =
 			article.querySelector("time")?.textContent;
 		if (!date) {
-			return;
+			return "error";
 		}
 
 		const dateArr = date.match(/[\d]+/g);
 		if (!dateArr) {
-			return;
+			return "error";
 		}
 
 		const dateObj: dateObj = {
@@ -81,16 +69,25 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	}
 
 	if (message == "download the article img") {
-		const article = document.querySelector("article");
-		const textContents = article.querySelectorAll("a");
+		interface tweet {
+			author: string;
+			date: string;
+			src: string[];
+		}
 
-		const author = getAuthor(textContents);
-		const dateText = getDate(article);
-		const imgSrcArr = getImgSrc(article);
+		const article: HTMLElement | null = document.querySelector("article");
 
-		const tweet = new TweetArticle(author, dateText, imgSrcArr);
-		console.log(tweet);
+		if (article instanceof HTMLElement) {
+			const tweet: tweet = {
+				author: getAuthor(article),
+				date: getDate(article),
+				src: getImgSrc(article),
+			};
+			console.log(tweet);
 
-		sendResponse(tweet);
+			sendResponse(tweet);
+		} else {
+			console.error("constance article is not HTMLElemnet");
+		}
 	}
 });
