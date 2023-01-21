@@ -32,21 +32,30 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 	//text datetext 취득
 	function getDate(article: HTMLElement) {
-		const date: string = article.querySelector("time").textContent as string;
-		let temp = date.match(/[\d]+/g) as RegExpMatchArray;
-		const TEMP_LENGTH = 5;
-
-		temp[2] = temp[2].slice(2, 4);
-		let tempTwo: string[] = [];
-		tempTwo.push(temp[2]);
-		for (let i = 3; i < TEMP_LENGTH; i++) {
-			if (temp[i].length < 2) {
-				temp[i] = "0" + temp[i];
-			}
-			tempTwo.push(temp[i]);
+		interface dateObj {
+			year: string;
+			month: string;
+			day: string;
 		}
-		const dateText = tempTwo.join("");
 
+		const date: string | null | undefined =
+			article.querySelector("time")?.textContent;
+		if (!date) {
+			return;
+		}
+
+		const dateArr = date.match(/[\d]+/g);
+		if (!dateArr) {
+			return;
+		}
+
+		const dateObj: dateObj = {
+			year: dateArr[2].slice(2, 4),
+			month: dateArr[3].length === 2 ? dateArr[3] : "0" + dateArr[3],
+			day: dateArr[4].length === 2 ? dateArr[4] : "0" + dateArr[4],
+		};
+
+		const dateText = dateObj.year + dateObj.month + dateObj.day;
 		return dateText;
 	}
 
