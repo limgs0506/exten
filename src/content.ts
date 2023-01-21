@@ -51,14 +51,20 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	}
 
 	//arti img.src 취득
-	function getImgSrc(article: HTMLElement) {
+	function getImgSrc(article: HTMLElement): string[] {
 		const imgList: NodeListOf<HTMLImageElement> = article.querySelectorAll(
 			'img[src*="/media/"]'
 		);
 		let imgSrcArr: string[] = [];
-		for (let i = 0; i < imgList.length; i++) {
-			const imgSrc = imgList[i].src;
+
+		if (imgList.length) {
+			return [];
+		}
+
+		for (const img of imgList) {
+			const imgSrc: string = img.src;
 			const originImg: string = imgSrc.replace(/(?<=name=)\w+/gi, "orig");
+
 			imgSrcArr.push(originImg);
 		}
 
