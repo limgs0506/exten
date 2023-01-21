@@ -12,13 +12,22 @@ class TweetArticle {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	//text author 취득
-	function getAuthor(text: NodeListOf<HTMLAnchorElement>) {
-		const author =
-			text[2].textContent[0] === "@"
-				? (text[2].textContent as string)
-				: (text[3].textContent as string);
+	function getAuthor(article: HTMLElement): string {
+		const anchorList: NodeListOf<HTMLAnchorElement> =
+			article.querySelectorAll("a");
 
-		return author;
+		for (const anchor of anchorList) {
+			const anchorText: string | null = anchor.textContent;
+
+			if (!anchorText) {
+				continue;
+			}
+
+			if (anchorText[0] === "@") {
+				return anchorText;
+			}
+		}
+		return "UsernameNotFound";
 	}
 
 	//text datetext 취득
