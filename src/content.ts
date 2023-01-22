@@ -19,7 +19,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	}
 
 	//text datetext 취득
-	function getDate(article: HTMLElement) {
+	function getDate(article: HTMLElement): string {
 		interface dateObj {
 			year: string;
 			month: string;
