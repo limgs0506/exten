@@ -26,9 +26,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			day: string;
 		}
 
-		const date: string | null = article
-			.querySelectorAll("time")
-			.item(1)?.textContent;
+		//인용 트윗은 article 안에 time이 2개 있기 때문에
+		//querySelectorAll()로 NodeList를 만들어
+		//마지막 time 요소를 취한다
+		const dateList: NodeListOf<HTMLTimeElement> =
+			article.querySelectorAll("time");
+		const date: string | null = dateList.item(dateList.length - 1).textContent;
 		if (!date) {
 			return "error";
 		}
