@@ -26,8 +26,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			day: string;
 		}
 
-		const date: string | null | undefined =
-			article.querySelector("time")?.textContent;
+		const date: string | null = article
+			.querySelectorAll("time")
+			.item(1)?.textContent;
 		if (!date) {
 			return "error";
 		}
