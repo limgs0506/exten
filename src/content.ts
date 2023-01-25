@@ -47,6 +47,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			day: dateArr[4].length === 2 ? dateArr[4] : "0" + dateArr[4],
 		};
 
+
 		const dateText = dateObj.year + dateObj.month + dateObj.day;
 		return dateText;
 	}
