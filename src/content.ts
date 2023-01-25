@@ -56,17 +56,21 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 		const imgList: NodeListOf<HTMLImageElement> = article.querySelectorAll(
 			'img[src*="/media/"]'
 		);
-		let imgSrcArr: string[] = [];
-
 		if (!imgList.length) {
 			return [];
 		}
 
-		for (const img of imgList) {
-			const imgSrc: string = img.src;
-			const originImg: string = imgSrc.replace(/(?<=name=)\w+/gi, "orig");
+		let imgSrcArr: string[] = [];
 
-			imgSrcArr.push(originImg);
+		for (const img of imgList) {
+			//이미지 링크 url의 트윗 번호? 식별자?를 페이지 url과 비교
+			//.../status/"18263780" <= 이 부분
+			if (img.closest("a")?.href.split("/")[5] === document.URL.split("/")[5]) {
+				const imgSrc: string = img.src;
+				const originImg: string = imgSrc.replace(/(?<=name=)\w+/gi, "orig");
+
+				imgSrcArr.push(originImg);
+			}
 		}
 
 		return imgSrcArr;
