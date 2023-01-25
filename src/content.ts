@@ -26,8 +26,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			day: string;
 		}
 
-		const date: string | null | undefined =
-			article.querySelector("time")?.textContent;
+		//인용 트윗은 article 안에 time이 2개 있기 때문에
+		//querySelectorAll()로 NodeList를 만들어
+		//마지막 time 요소를 취한다
+		const dateList: NodeListOf<HTMLTimeElement> =
+			article.querySelectorAll("time");
+		const date: string | null = dateList.item(dateList.length - 1).textContent;
 		if (!date) {
 			return "error";
 		}
@@ -43,6 +47,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			day: dateArr[4].length === 2 ? dateArr[4] : "0" + dateArr[4],
 		};
 
+
 		const dateText = dateObj.year + dateObj.month + dateObj.day;
 		return dateText;
 	}
@@ -52,17 +57,21 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 		const imgList: NodeListOf<HTMLImageElement> = article.querySelectorAll(
 			'img[src*="/media/"]'
 		);
-		let imgSrcArr: string[] = [];
-
 		if (!imgList.length) {
 			return [];
 		}
 
-		for (const img of imgList) {
-			const imgSrc: string = img.src;
-			const originImg: string = imgSrc.replace(/(?<=name=)\w+/gi, "orig");
+		let imgSrcArr: string[] = [];
 
-			imgSrcArr.push(originImg);
+		for (const img of imgList) {
+			//이미지 링크 url의 트윗 번호? 식별자?를 페이지 url과 비교
+			//.../status/"18263780" <= 이 부분
+			if (img.closest("a")?.href.split("/")[5] === document.URL.split("/")[5]) {
+				const imgSrc: string = img.src;
+				const originImg: string = imgSrc.replace(/(?<=name=)\w+/gi, "orig");
+
+				imgSrcArr.push(originImg);
+			}
 		}
 
 		return imgSrcArr;
