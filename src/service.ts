@@ -18,9 +18,9 @@ const download = () => {
 
 				chrome.downloads.download({
 					url: response.src[i],
-					filename: `${response.author}/${response.author}-${response.date}-${
-						i + 1
-					}.${fileFormat}`,
+					filename: `twimg/${response.author}/${response.author}-${
+						response.date
+					}-${i + 1}.${fileFormat}`,
 				});
 			}
 		});
