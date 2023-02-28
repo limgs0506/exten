@@ -34,7 +34,7 @@
 	},
 	"content_scripts": [
 		{
-			"matches": ["https://twitter.com/*/status/*"],
+			"matches": ["https://twitter.com/*"],
 			"js": ["src/content.ts"]
 		}
 	],
