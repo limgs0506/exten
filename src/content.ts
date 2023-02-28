@@ -76,6 +76,28 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 		return imgSrcArr;
 	}
 
+	//타임라인 내 트윗 container 노드를 찾음
+	const tl = document.querySelector(
+		'div[aria-label="타임라인: 내 홈 타임라인"]'
+	).firstChild;
+
+	//observer 인스턴스 생성
+	const OSV = new MutationObserver((mutationRecord) => {
+		mutationRecord.map((record) => {
+			if (!record.addedNodes[0]) {
+				return;
+			}
+			const added = record.addedNodes[0];
+			const addedImg = added.querySelector("img");
+			if (addedImg) {
+				console.log(addedImg);
+			}
+		});
+	});
+
+	//container 안의 트윗의 변화를 감지
+	OSV.observe(tl, { childList: true });
+
 	if (message == "download the article img") {
 		interface tweet {
 			author: string;
