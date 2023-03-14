@@ -82,24 +82,30 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	)?.firstElementChild;
 
 	if (tl && tl instanceof HTMLDivElement) {
-		//observer 인스턴스 생성
-		const OSV = new MutationObserver((mutationRecord) => {
-			mutationRecord.map((record) => {
-				if (!record.addedNodes[0]) {
-					return;
+		const observer = new MutationObserver((mutationRecord) => {
+			for (let record of mutationRecord) {
+				//record.addedNodes[0]의 타입은 Node라서 querySelector에 경고 발생
+				const tweet = record.addedNodes[0] as HTMLElement;
+				//트윗이 생성된 경우만 진행
+				if (!tweet) {
+					continue;
 				}
 
-				const added = record.addedNodes[0] as HTMLElement;
-				//added기 Node라서 querySelector를 쓸 수 없다고 경고해주지만 Element Node이므로 실제론 사용가능함
-				const addedImg = added.querySelector("img");
-
-				if (addedImg) {
-					console.log(addedImg);
+				//img가 있는 트윗의 생성은 캐피하지만 그 안의 img는 잡지 못하는 문제
+				//img가 로딩 되기 전에 log가 실행되는 게 아닐까? =>  트윗 로딩이 끝나는 걸 감지할 방법
+				const tweetImg = tweet.querySelector("img[alt='이미지']");
+				console.log("Image: ", tweetImg);
+				if (!tweetImg) {
+					continue;
 				}
-			});
+
+				// let btn = document.createElement("button");
+				// const newBtn = btn.cloneNode(true);
+				// tweet.appendChild(newBtn);
+			}
 		});
 		//container 안의 트윗의 변화를 감지
-		OSV.observe(tl, { childList: true });
+		observer.observe(tl, { childList: true });
 	}
 
 	if (message == "download the article img") {
