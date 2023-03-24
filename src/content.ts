@@ -90,14 +90,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 				if (!tweet) {
 					continue;
 				}
-
-				//img가 있는 트윗의 생성은 캐피하지만 그 안의 img는 잡지 못하는 문제
-				//img가 로딩 되기 전에 log가 실행되는 게 아닐까? =>  트윗 로딩이 끝나는 걸 감지할 방법
-				const tweetImg = tweet.querySelector("img[alt='이미지']");
-				console.log("Image: ", tweetImg);
-				if (!tweetImg) {
-					continue;
-				}
+				//이미지가 로드된 후에 동작하도록 1초 대기
+				setTimeout(() => {
+					const tweetImg = tweet.querySelector("img[alt='이미지']");
+					if (!tweetImg) {
+						return;
+					}
+					console.log("Image: ", tweetImg);
+				}, 1000);
 
 				// let btn = document.createElement("button");
 				// const newBtn = btn.cloneNode(true);
