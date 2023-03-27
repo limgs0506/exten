@@ -100,34 +100,50 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	}
 });
 
-//타임라인 내 트윗 container 노드를 찾음
-const tl: Element | null | undefined = document.querySelector(
-	'div[aria-label="타임라인: 내 홈 타임라인"]'
-)?.firstElementChild;
+const injectObsever = setInterval(() => {
+	//타임라인 내 트윗 container 노드를 찾음
+	let tl: Element | null | undefined = document.querySelector(
+		'div[aria-label="타임라인: 내 홈 타임라인"]'
+	)?.firstElementChild;
+	console.log("interval");
 
-if (tl && tl instanceof HTMLDivElement) {
-	const observer = new MutationObserver((mutationRecord) => {
-		for (let record of mutationRecord) {
-			//record.addedNodes[0]의 타입은 Node라서 querySelector에 경고 발생
-			const tweet = record.addedNodes[0] as HTMLElement;
-			//트윗이 생성된 경우만 진행
-			if (!tweet) {
-				continue;
-			}
-			//이미지가 로드된 후에 동작하도록 1초 대기
-			setTimeout(() => {
-				const tweetImg = tweet.querySelector("img[alt='이미지']");
-				if (!tweetImg) {
-					return;
+	if (tl && tl instanceof HTMLDivElement) {
+		clearInterval(injectObsever);
+		console.log("interval clear");
+
+		setTimeout(() => {
+			let tl: Element | null | undefined = document.querySelector(
+				'div[aria-label="타임라인: 내 홈 타임라인"]'
+			)?.firstElementChild;
+			console.log("variable init");
+
+			const observer = new MutationObserver((mutationRecord) => {
+				for (let record of mutationRecord) {
+					//record.addedNodes[0]의 타입은 Node라서 querySelector에 경고 발생
+					const tweet = record.addedNodes[0] as HTMLElement;
+					//트윗이 생성된 경우만 진행
+					if (!tweet) {
+						continue;
+					}
+					console.log("tweet: ", tweet);
+					//이미지가 로드된 후에 동작하도록 1초 대기
+					setTimeout(() => {
+						const tweetImg = tweet.querySelector("img[alt='이미지']");
+						if (!tweetImg) {
+							return;
+						}
+						console.log("Image: ", tweetImg);
+					}, 1000);
+
+					// let btn = document.createElement("button");
+					// const newBtn = btn.cloneNode(true);
+					// tweet.appendChild(newBtn);
 				}
-				console.log("Image: ", tweetImg);
-			}, 1000);
+			});
 
-			// let btn = document.createElement("button");
-			// const newBtn = btn.cloneNode(true);
-			// tweet.appendChild(newBtn);
-		}
-	});
-	//container 안의 트윗의 변화를 감지
-	observer.observe(tl, { childList: true });
-}
+			//container 안의 트윗의 변화를 감지
+			observer.observe(tl, { childList: true });
+			console.log("start observe");
+		}, 1000 * 5);
+	}
+}, 100);
