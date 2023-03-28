@@ -131,12 +131,12 @@ const injectObsever = setInterval(() => {
 						if (!tweetImg) {
 							return;
 						}
-						console.log("Image: ", tweetImg);
-					}, 1000);
 
-					// let btn = document.createElement("button");
-					// const newBtn = btn.cloneNode(true);
-					// tweet.appendChild(newBtn);
+						const btn = document.createElement("button");
+						const newBtn = btn.cloneNode(true);
+						const imageAera = tweet.querySelector(".css-1dbjc4n.r-580adz");
+						imageAera?.appendChild(newBtn);
+					}, 1000);
 				}
 			});
 
