@@ -102,17 +102,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 const injectObsever = setInterval(() => {
 	//타임라인 내 트윗 container 노드를 찾음
-	let tl: Element | null | undefined = document.querySelector(
+	const tlFst: Element | null | undefined = document.querySelector(
 		'div[aria-label="타임라인: 내 홈 타임라인"]'
 	)?.firstElementChild;
 	console.log("interval");
 
-	if (tl && tl instanceof HTMLDivElement) {
+	if (tlFst && tlFst instanceof HTMLDivElement) {
 		clearInterval(injectObsever);
 		console.log("interval clear");
 
 		setTimeout(() => {
-			let tl: Element | null | undefined = document.querySelector(
+			const tlSnd: Element | null | undefined = document.querySelector(
 				'div[aria-label="타임라인: 내 홈 타임라인"]'
 			)?.firstElementChild;
 			console.log("variable init");
@@ -125,7 +125,6 @@ const injectObsever = setInterval(() => {
 					if (!tweet) {
 						continue;
 					}
-					console.log("tweet: ", tweet);
 					//이미지가 로드된 후에 동작하도록 1초 대기
 					setTimeout(() => {
 						const tweetImg = tweet.querySelector("img[alt='이미지']");
@@ -142,8 +141,8 @@ const injectObsever = setInterval(() => {
 			});
 
 			//container 안의 트윗의 변화를 감지
-			observer.observe(tl, { childList: true });
+			observer.observe(tlSnd, { childList: true });
 			console.log("start observe");
-		}, 1000 * 5);
+		}, 1000 * 1);
 	}
 }, 100);
