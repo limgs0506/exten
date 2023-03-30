@@ -1,8 +1,8 @@
-.css-1dbjc4n.r-580adz {
-}
 .css-1dbjc4n.r-580adz > button {
 	background-color: yellow;
 	position: absolute;
-	right: 50px;
-	top: 50px;
+	right: 1.5em;
+	top: 1.5em;
+	height: 3em;
+	width: 3em;
 }
