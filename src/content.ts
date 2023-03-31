@@ -133,6 +133,7 @@ const injectObsever = setInterval(() => {
 						}
 
 						const btn = document.createElement("button");
+						btn.textContent = "Down";
 						const newBtn = btn.cloneNode(true);
 						const imageAera = tweet.querySelector(".css-1dbjc4n.r-580adz");
 						imageAera?.appendChild(newBtn);

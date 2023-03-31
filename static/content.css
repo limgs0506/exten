@@ -1,8 +1,15 @@
 .css-1dbjc4n.r-580adz > button {
-	background-color: yellow;
+	background: rgba(0, 0, 0, 0.77);
 	position: absolute;
 	right: 1.5em;
 	top: 1.5em;
-	height: 3em;
+	height: 1.5em;
 	width: 3em;
+	padding-left: 5px;
+	padding-right: 5px;
+	border: none;
+	border-radius: 4px;
+	color: white;
+	cursor: pointer;
+	font-size: 18px;
 }
