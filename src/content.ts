@@ -135,6 +135,15 @@ const injectObsever = setInterval(() => {
 						const btn = document.createElement("button");
 						btn.textContent = "Down";
 						const newBtn = btn.cloneNode(true);
+						newBtn.addEventListener("click", () => {
+							// chrome.runtime.sendMessage({
+							// 	message: "Download Button Click",
+							// 	author: "",
+							// 	date: "",
+							// 	imgSrc: "",
+							// });
+							console.log("버튼 클릭");
+						});
 						const imageAera = tweet.querySelector(".css-1dbjc4n.r-580adz");
 						imageAera?.appendChild(newBtn);
 					}, 1000);
