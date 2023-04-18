@@ -25,29 +25,28 @@ function getDate(article: HTMLElement): string {
 		day: string;
 	}
 
-	//인용 트윗은 article 안에 time이 2개 있기 때문에
-	//querySelectorAll()로 NodeList를 만들어
-	//마지막 time 요소를 취한다
-	const dateList: NodeListOf<HTMLTimeElement> =
+	const timestamp: NodeListOf<HTMLTimeElement> =
 		article.querySelectorAll("time");
-	const date: string | null = dateList.item(dateList.length - 1).textContent;
-	if (!date) {
-		return "error";
-	}
-
-	const dateArr = date.match(/[\d]+/g);
-	if (!dateArr) {
-		return "error";
-	}
+	if (!timestamp[0]) return "noTimeElement";
+	//인용트윗의 time과 구분하기 위해 더 늦은 time을 사용
+	const fstDate = new Date(timestamp[0].dateTime);
+	//new Date(undefined)는 Invalid Date
+	//Invalid Date.getTime은 NaN
+	//NaN을 비교하면 false
+	const secDate = new Date(timestamp[1]?.dateTime);
+	const date = secDate.getTime() > fstDate.getTime() ? secDate : fstDate;
 
 	const dateObj: dateObj = {
-		year: dateArr[2].slice(2, 4),
-		month: dateArr[3].length === 2 ? dateArr[3] : "0" + dateArr[3],
-		day: dateArr[4].length === 2 ? dateArr[4] : "0" + dateArr[4],
+		year: date.getFullYear().toString().slice(2, 4),
+		month: (date.getMonth() + 1).toString(),
+		day: date.getDate().toString(),
 	};
 
-	const dateText = dateObj.year + dateObj.month + dateObj.day;
-	return dateText;
+	const addZero = (str: string) => {
+		return str.length < 2 ? "0" + str : str;
+	};
+
+	return dateObj.year + addZero(dateObj.month) + addZero(dateObj.day);
 }
 
 //arti img.src 취득
