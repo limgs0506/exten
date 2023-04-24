@@ -64,8 +64,7 @@ function getImgSrc(article: HTMLElement): string[] {
 		//이미지 링크 url의 트윗 번호? 식별자?를 페이지 url과 비교
 		//.../status/"18263780" <= 이 부분
 		if (img.closest("a")?.href.split("/")[5] === document.URL.split("/")[5]) {
-			const imgSrc: string = img.src;
-			const originImg: string = imgSrc.replace(/(?<=name=)\w+/gi, "orig");
+			const originImg: string = img.src.replace(/(?<=name=)\w+/gi, "orig");
 
 			imgSrcArr.push(originImg);
 		}
@@ -141,7 +140,7 @@ const injectObsever = setInterval(() => {
 							// 	date: "",
 							// 	imgSrc: "",
 							// });
-							console.log("버튼 클릭");
+							console.log(getAuthor(tweet), getDate(tweet), getImgSrc(tweet));
 						});
 						const imageAera = tweet.querySelector(".css-1dbjc4n.r-580adz");
 						imageAera?.appendChild(newBtn);
