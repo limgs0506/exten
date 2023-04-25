@@ -129,12 +129,12 @@ const injectObsever = setInterval(() => {
 						btn.textContent = "Down";
 						const newBtn = btn.cloneNode(true);
 						newBtn.addEventListener("click", () => {
-							// chrome.runtime.sendMessage({
-							// 	message: "Download Button Click",
-							// 	author: "",
-							// 	date: "",
-							// 	imgSrc: "",
-							// });
+							chrome.runtime.sendMessage({
+								message: "Download Button Click",
+								author: getAuthor(tweet),
+								date: getDate(tweet),
+								src: getImgSrc(tweet),
+							});
 							console.log(getAuthor(tweet), getDate(tweet), getImgSrc(tweet));
 						});
 						const imageAera = tweet.querySelector(".css-1dbjc4n.r-580adz");
