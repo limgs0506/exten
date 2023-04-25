@@ -1,81 +1,74 @@
+//text author 취득
+function getAuthor(article: HTMLElement): string {
+	const anchorList: NodeListOf<HTMLAnchorElement> =
+		article.querySelectorAll("a");
+
+	for (const anchor of anchorList) {
+		const anchorText: string | null = anchor.textContent;
+
+		if (!anchorText) {
+			continue;
+		}
+
+		if (anchorText[0] === "@") {
+			return anchorText;
+		}
+	}
+	return "UsernameNotFound";
+}
+
+//text datetext 취득
+function getDate(article: HTMLElement): string {
+	interface dateObj {
+		year: string;
+		month: string;
+		day: string;
+	}
+
+	const timestamp: NodeListOf<HTMLTimeElement> =
+		article.querySelectorAll("time");
+	if (!timestamp[0]) return "noTimeElement";
+	//인용트윗의 time과 구분하기 위해 더 늦은 time을 사용
+	const fstDate = new Date(timestamp[0].dateTime);
+	//new Date(undefined)는 Invalid Date
+	//Invalid Date.getTime은 NaN
+	//NaN을 비교하면 false
+	const secDate = new Date(timestamp[1]?.dateTime);
+	const date = secDate.getTime() > fstDate.getTime() ? secDate : fstDate;
+
+	const dateObj: dateObj = {
+		year: date.getFullYear().toString().slice(2, 4),
+		month: (date.getMonth() + 1).toString(),
+		day: date.getDate().toString(),
+	};
+
+	const addZero = (str: string) => {
+		return str.length < 2 ? "0" + str : str;
+	};
+
+	return dateObj.year + addZero(dateObj.month) + addZero(dateObj.day);
+}
+
+//arti img.src 취득
+function getImgSrc(article: HTMLElement): string[] {
+	const imgList: NodeListOf<HTMLImageElement> = article.querySelectorAll(
+		'img[src*="/media/"]'
+	);
+	if (!imgList.length) {
+		return [];
+	}
+
+	let imgSrcArr: string[] = [];
+
+	for (const img of imgList) {
+		const originImg: string = img.src.replace(/(?<=name=)\w+/gi, "orig");
+		imgSrcArr.push(originImg);
+	}
+
+	return imgSrcArr;
+}
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-	//text author 취득
-	function getAuthor(article: HTMLElement): string {
-		const anchorList: NodeListOf<HTMLAnchorElement> =
-			article.querySelectorAll("a");
-
-		for (const anchor of anchorList) {
-			const anchorText: string | null = anchor.textContent;
-
-			if (!anchorText) {
-				continue;
-			}
-
-			if (anchorText[0] === "@") {
-				return anchorText;
-			}
-		}
-		return "UsernameNotFound";
-	}
-
-	//text datetext 취득
-	function getDate(article: HTMLElement): string {
-		interface dateObj {
-			year: string;
-			month: string;
-			day: string;
-		}
-
-		//인용 트윗은 article 안에 time이 2개 있기 때문에
-		//querySelectorAll()로 NodeList를 만들어
-		//마지막 time 요소를 취한다
-		const dateList: NodeListOf<HTMLTimeElement> =
-			article.querySelectorAll("time");
-		const date: string | null = dateList.item(dateList.length - 1).textContent;
-		if (!date) {
-			return "error";
-		}
-
-		const dateArr = date.match(/[\d]+/g);
-		if (!dateArr) {
-			return "error";
-		}
-
-		const dateObj: dateObj = {
-			year: dateArr[2].slice(2, 4),
-			month: dateArr[3].length === 2 ? dateArr[3] : "0" + dateArr[3],
-			day: dateArr[4].length === 2 ? dateArr[4] : "0" + dateArr[4],
-		};
-
-		const dateText = dateObj.year + dateObj.month + dateObj.day;
-		return dateText;
-	}
-
-	//arti img.src 취득
-	function getImgSrc(article: HTMLElement): string[] {
-		const imgList: NodeListOf<HTMLImageElement> = article.querySelectorAll(
-			'img[src*="/media/"]'
-		);
-		if (!imgList.length) {
-			return [];
-		}
-
-		let imgSrcArr: string[] = [];
-
-		for (const img of imgList) {
-			//이미지 링크 url의 트윗 번호? 식별자?를 페이지 url과 비교
-			//.../status/"18263780" <= 이 부분
-			if (img.closest("a")?.href.split("/")[5] === document.URL.split("/")[5]) {
-				const imgSrc: string = img.src;
-				const originImg: string = imgSrc.replace(/(?<=name=)\w+/gi, "orig");
-
-				imgSrcArr.push(originImg);
-			}
-		}
-
-		return imgSrcArr;
-	}
-
 	if (message == "download the article img") {
 		interface tweet {
 			author: string;
@@ -99,3 +92,60 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 		}
 	}
 });
+
+const injectObsever = setInterval(() => {
+	//타임라인 내 트윗 container 노드를 찾음
+	const tlFst: Element | null | undefined = document.querySelector(
+		'div[aria-label="타임라인: 내 홈 타임라인"]'
+	)?.firstElementChild;
+	console.log("interval");
+
+	if (tlFst && tlFst instanceof HTMLDivElement) {
+		clearInterval(injectObsever);
+		console.log("interval clear");
+
+		setTimeout(() => {
+			const tlSnd: Element | null | undefined = document.querySelector(
+				'div[aria-label="타임라인: 내 홈 타임라인"]'
+			)?.firstElementChild;
+			console.log("variable init");
+
+			const observer = new MutationObserver((mutationRecord) => {
+				for (let record of mutationRecord) {
+					//record.addedNodes[0]의 타입은 Node라서 querySelector에 경고 발생
+					const tweet = record.addedNodes[0] as HTMLElement;
+					//트윗이 생성된 경우만 진행
+					if (!tweet) {
+						continue;
+					}
+					//이미지가 로드된 후에 동작하도록 1초 대기
+					setTimeout(() => {
+						const tweetImg = tweet.querySelector("img[alt='이미지']");
+						if (!tweetImg) {
+							return;
+						}
+
+						const btn = document.createElement("button");
+						btn.textContent = "Down";
+						const newBtn = btn.cloneNode(true);
+						newBtn.addEventListener("click", () => {
+							chrome.runtime.sendMessage({
+								message: "Download Button Click",
+								author: getAuthor(tweet),
+								date: getDate(tweet),
+								src: getImgSrc(tweet),
+							});
+							console.log(getAuthor(tweet), getDate(tweet), getImgSrc(tweet));
+						});
+						const imageAera = tweet.querySelector(".css-1dbjc4n.r-580adz");
+						imageAera?.appendChild(newBtn);
+					}, 1000);
+				}
+			});
+
+			//container 안의 트윗의 변화를 감지
+			observer.observe(tlSnd, { childList: true });
+			console.log("start observe");
+		}, 1000 * 1);
+	}
+}, 100);

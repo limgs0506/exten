@@ -8,6 +8,23 @@ chrome.commands.onCommand.addListener((command) => {
 	}
 });
 
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+	if (message.message === "Download Button Click") {
+		//chrome.downloads.download();
+		console.log(message);
+		for (let i = 0; i < message.src.length; i++) {
+			const fileFormat = message.src[i].match(/(?<=format=)\w+/gi, "orig");
+
+			chrome.downloads.download({
+				url: message.src[i],
+				filename: `twimg/${message.author}/${message.author}-${message.date}-${
+					i + 1
+				}.${fileFormat}`,
+			});
+		}
+	}
+});
+
 const download = () => {
 	chrome.tabs.query({ currentWindow: true, active: true }, (result) => {
 		const currentTabID = result[0].id as number;
