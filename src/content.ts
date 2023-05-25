@@ -68,6 +68,65 @@ function getImgSrc(article: HTMLElement): string[] {
 	return imgSrcArr;
 }
 
+function startObserve(): void {
+	const injectObsever = setInterval(() => {
+		//타임라인 내 트윗 container 노드를 찾음
+		const tlFst: Element | null | undefined = document.querySelector(
+			'div[aria-label^="타임라인"]'
+		)?.firstElementChild;
+		console.log("interval");
+
+		if (tlFst && tlFst instanceof HTMLDivElement) {
+			clearInterval(injectObsever);
+			console.log("interval clear");
+
+			setTimeout(() => {
+				const tlSnd: Element | null | undefined = document.querySelector(
+					'div[aria-label^="타임라인"]'
+				)?.firstElementChild;
+				console.log("variable init");
+
+				const observer = new MutationObserver((mutationRecord) => {
+					for (let record of mutationRecord) {
+						//record.addedNodes[0]의 타입은 Node라서 querySelector에 경고 발생
+						const tweet = record.addedNodes[0] as HTMLElement;
+						//트윗이 생성된 경우만 진행
+						if (!tweet) {
+							continue;
+						}
+						//이미지가 로드된 후에 동작하도록 1초 대기
+						setTimeout(() => {
+							const tweetImg = tweet.querySelector("img[alt='이미지']");
+							if (!tweetImg) {
+								return;
+							}
+
+							const btn = document.createElement("button");
+							btn.textContent = "Down";
+							const newBtn = btn.cloneNode(true);
+							newBtn.addEventListener("click", () => {
+								chrome.runtime.sendMessage({
+									message: "Download Button Click",
+									author: getAuthor(tweet),
+									date: getDate(tweet),
+									src: getImgSrc(tweet),
+								});
+								console.log(getAuthor(tweet), getDate(tweet), getImgSrc(tweet));
+							});
+							const imageAera = tweet.querySelector(".css-1dbjc4n.r-580adz");
+							imageAera?.appendChild(newBtn);
+						}, 1000);
+					}
+				});
+
+				//container 안의 트윗의 변화를 감지
+				observer.observe(tlSnd, { childList: true });
+				console.log("start observe");
+			}, 1000 * 1);
+		}
+	}, 100);
+}
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	if (message == "download the article img") {
 		interface tweet {
@@ -87,65 +146,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			console.log(tweet);
 
 			sendResponse(tweet);
-		} else {
-			console.error("constance article is not HTMLElemnet");
 		}
+	}
+	if (message === "history updated") {
+		startObserve();
 	}
 });
 
-const injectObsever = setInterval(() => {
-	//타임라인 내 트윗 container 노드를 찾음
-	const tlFst: Element | null | undefined = document.querySelector(
-		'div[aria-label="타임라인: 내 홈 타임라인"]'
-	)?.firstElementChild;
-	console.log("interval");
-
-	if (tlFst && tlFst instanceof HTMLDivElement) {
-		clearInterval(injectObsever);
-		console.log("interval clear");
-
-		setTimeout(() => {
-			const tlSnd: Element | null | undefined = document.querySelector(
-				'div[aria-label="타임라인: 내 홈 타임라인"]'
-			)?.firstElementChild;
-			console.log("variable init");
-
-			const observer = new MutationObserver((mutationRecord) => {
-				for (let record of mutationRecord) {
-					//record.addedNodes[0]의 타입은 Node라서 querySelector에 경고 발생
-					const tweet = record.addedNodes[0] as HTMLElement;
-					//트윗이 생성된 경우만 진행
-					if (!tweet) {
-						continue;
-					}
-					//이미지가 로드된 후에 동작하도록 1초 대기
-					setTimeout(() => {
-						const tweetImg = tweet.querySelector("img[alt='이미지']");
-						if (!tweetImg) {
-							return;
-						}
-
-						const btn = document.createElement("button");
-						btn.textContent = "Down";
-						const newBtn = btn.cloneNode(true);
-						newBtn.addEventListener("click", () => {
-							chrome.runtime.sendMessage({
-								message: "Download Button Click",
-								author: getAuthor(tweet),
-								date: getDate(tweet),
-								src: getImgSrc(tweet),
-							});
-							console.log(getAuthor(tweet), getDate(tweet), getImgSrc(tweet));
-						});
-						const imageAera = tweet.querySelector(".css-1dbjc4n.r-580adz");
-						imageAera?.appendChild(newBtn);
-					}, 1000);
-				}
-			});
-
-			//container 안의 트윗의 변화를 감지
-			observer.observe(tlSnd, { childList: true });
-			console.log("start observe");
-		}, 1000 * 1);
-	}
-}, 100);
+startObserve();
