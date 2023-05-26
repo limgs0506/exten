@@ -86,6 +86,24 @@ function startObserve(): void {
 				)?.firstElementChild;
 				console.log("variable init");
 
+				const addDownBtn = (tweet: HTMLElement) => {
+					const btn = document.createElement("button");
+					btn.textContent = "Down";
+					const newBtn = btn.cloneNode(true);
+					newBtn.addEventListener("click", () => {
+						chrome.runtime.sendMessage({
+							message: "Download Button Click",
+							author: getAuthor(tweet),
+							date: getDate(tweet),
+							src: getImgSrc(tweet),
+						});
+						console.log(getAuthor(tweet), getDate(tweet), getImgSrc(tweet));
+					});
+
+					const imageAera = tweet.querySelector(".css-1dbjc4n.r-580adz");
+					imageAera?.appendChild(newBtn);
+				};
+
 				const observer = new MutationObserver((mutationRecord) => {
 					for (let record of mutationRecord) {
 						//record.addedNodes[0]의 타입은 Node라서 querySelector에 경고 발생
@@ -122,6 +140,10 @@ function startObserve(): void {
 				//container 안의 트윗의 변화를 감지
 				observer.observe(tlSnd, { childList: true });
 				console.log("start observe");
+				console.log(tlSnd?.children);
+				for (let tweet of tlSnd!.children) {
+					addDownBtn(tweet as HTMLElement);
+				}
 			}, 1000 * 1);
 		}
 	}, 100);
