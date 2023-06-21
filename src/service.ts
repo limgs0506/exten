@@ -8,6 +8,15 @@ chrome.commands.onCommand.addListener((command) => {
 	}
 });
 
+chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
+	if (details.url.startsWith("https://twitter.com")) {
+		chrome.tabs.query({ currentWindow: true, active: true }, (result) => {
+			const currentTabID = result[0].id as number;
+			chrome.tabs.sendMessage(currentTabID, "history updated");
+		});
+	}
+});
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	if (message.message === "Download Button Click") {
 		//chrome.downloads.download();
